@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+
+\bibitem{barreto2017successor}
+A.~Barreto, W.~Dabney, R.~Munos, J.~J. Hunt, T.~Schaul, D.~Silver, and H.~P.
+  van Hasselt.
+\newblock Successor features for transfer in reinforcement learning.
+\newblock In {\em Advances in Neural Information Processing Systems}, pages
+  4056--4066, 2017.
+
+\bibitem{kulkarni2016deep}
+T.~D. Kulkarni, A.~Saeedi, S.~Gautam, and S.~J. Gershman.
+\newblock Deep successor reinforcement learning.
+\newblock {\em arXiv preprint arXiv:1606.02396}, 2016.
+
+\bibitem{lehnert2017advantages}
+L.~Lehnert, S.~Tellex, and M.~L. Littman.
+\newblock Advantages and limitations of using successor features for transfer
+  in reinforcement learning.
+\newblock {\em arXiv preprint arXiv:1708.00102}, 2017.
+
+\end{thebibliography}

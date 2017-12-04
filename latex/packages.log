@@ -1,0 +1,37 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.7.6)  4 DEC 2017 22:50
+entering extended mode
+ \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**packages.tex
+(./packages.tex
+LaTeX2e <2017-04-15>
+Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
+
+./packages.tex:3: LaTeX Error: \usepackage before \documentclass.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.3 \usepackage{
+                expl3}[2012-07-08]
+? 
+./packages.tex:3: Emergency stop.
+ ...                                              
+                                                  
+l.3 \usepackage{
+                expl3}[2012-07-08]
+\usepackage may only appear in the document preamble, i.e.,
+between \documentclass and \begin{document}.
+
+ 
+Here is how much of TeX's memory you used:
+ 6 strings out of 492995
+ 273 string characters out of 6132705
+ 54074 words of memory out of 5000000
+ 3658 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 5i,0n,5p,84b,14s stack positions out of 5000i,500n,10000p,200000b,80000s
+./packages.tex:3:  ==> Fatal error occurred, no output PDF file produced!

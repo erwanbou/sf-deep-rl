@@ -1,0 +1,85 @@
+\newcommand{\assignmenttitle}{}
+\newcommand{\studentname}{}
+\newcommand{\email}{}
+\newcommand{\schoolyear}{2017/2018}
+
+
+\title{
+\normalfont \normalsize 
+\textsc{Reinforcement Learning, Master MVA, \schoolyear} \\
+[10pt] 
+\rule{\linewidth}{0.5pt} \\[6pt] 
+\huge \assignmenttitle \\
+\rule{\linewidth}{2pt}  \\[10pt]
+}
+
+\author{\studentname}
+
+\date{\small\email}
+
+\newcommand{\question}[1]{\subsubsection*{#1}}
+
+%\setlist[enumerate]{topsep=0pt,itemsep=-1ex,partopsep=1ex,parsep=1ex,label=(\roman*)}
+
+\graphicspath{{images/}}
+
+\newcommand{\labelnotempty}[1]{
+\def\temp{#1}\ifx\temp\empty
+\else
+    \label{#1}
+\fi
+}
+% single figure
+\newcommand{\singlefig}[4]{
+\begin{figure}[ht!]
+        \centering
+        \includegraphics[width={#2}\columnwidth]{#1}
+        \caption{#3}
+        \labelnotempty{#4}
+\end{figure}}
+
+\newcommand{\subfig}[4]{
+\includegraphics[width={#2}\columnwidth]{#1}
+\caption{#3}
+\labelnotempty{#4}
+}
+
+% double figure
+\newcommand{\doublefig}[4]{
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[t]{0.45\columnwidth}
+        \centering
+    #1
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.45\columnwidth}
+        \centering
+    #2
+    \end{subfigure}
+    \caption{#3}
+    \labelnotempty{#4}
+\end{figure}}
+
+% triple figure
+\newcommand{\triplefig}[5]{
+\begin{figure}[ht!]
+    \centering
+    \begin{subfigure}[t]{0.30\columnwidth}
+        \centering
+    #1
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.30\columnwidth}
+        \centering
+    #2
+    \end{subfigure}
+    ~
+    \begin{subfigure}[t]{0.30\columnwidth}
+        \centering
+    #3
+    \end{subfigure}
+    \caption{#4}
+    \labelnotempty{#5}
+\end{figure}}
+
