@@ -3,44 +3,46 @@ Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: main.aux
 The style file: abbrv.bst
 Database file #1: bib/biblio.bib
+Warning--I didn't find a database entry for "barreto2017successor"
 You've used 3 entries,
             2118 wiz_defined-function locations,
-            512 strings with 4352 characters,
-and the built_in function-call counts, 1237 in all, are:
-= -- 114
-> -- 79
-< -- 1
-+ -- 31
-- -- 28
-* -- 87
-:= -- 211
+            514 strings with 4311 characters,
+and the built_in function-call counts, 899 in all, are:
+= -- 80
+> -- 64
+< -- 0
++ -- 25
+- -- 22
+* -- 62
+:= -- 175
 add.period$ -- 9
 call.type$ -- 3
-change.case$ -- 23
+change.case$ -- 20
 chr.to.int$ -- 0
 cite$ -- 3
-duplicate$ -- 45
-empty$ -- 79
-format.name$ -- 28
-if$ -- 253
+duplicate$ -- 30
+empty$ -- 52
+format.name$ -- 22
+if$ -- 171
 int.to.chr$ -- 0
 int.to.str$ -- 3
 missing$ -- 3
 newline$ -- 18
 num.names$ -- 6
-pop$ -- 26
+pop$ -- 18
 preamble$ -- 1
-purify$ -- 20
+purify$ -- 17
 quote$ -- 0
-skip$ -- 37
+skip$ -- 22
 stack$ -- 0
-substring$ -- 55
-swap$ -- 15
-text.length$ -- 1
+substring$ -- 15
+swap$ -- 3
+text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 12
 warning$ -- 0
-while$ -- 9
+while$ -- 6
 width$ -- 4
 write$ -- 33
+(There was 1 warning)

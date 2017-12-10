@@ -1,11 +1,9 @@
 \begin{thebibliography}{1}
 
-\bibitem{barreto2017successor}
-A.~Barreto, W.~Dabney, R.~Munos, J.~J. Hunt, T.~Schaul, D.~Silver, and H.~P.
-  van Hasselt.
+\bibitem{DBLP:journals/corr/BarretoMSS16}
+A.~Barreto, R.~Munos, T.~Schaul, and D.~Silver.
 \newblock Successor features for transfer in reinforcement learning.
-\newblock In {\em Advances in Neural Information Processing Systems}, pages
-  4056--4066, 2017.
+\newblock {\em CoRR}, abs/1606.05312, 2016.
 
 \bibitem{kulkarni2016deep}
 T.~D. Kulkarni, A.~Saeedi, S.~Gautam, and S.~J. Gershman.
