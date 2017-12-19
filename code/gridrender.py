@@ -69,7 +69,7 @@ def render_q(env, q):
     root = Tk()
     w = GUI(root)
     rows, cols = len(env.grid), max(map(len, env.grid))
-    dim = 50
+    dim = 40
     w.config(width=cols * (dim + 12), height=rows * (dim + 12))
     for s in range(env.n_states):
         r, c = env.state2coord[s]
@@ -84,7 +84,7 @@ def render_policy(env, d):
     root = Tk()
     w = GUI(root)
     rows, cols = len(env.grid), max(map(len, env.grid))
-    dim = 50
+    dim = 40
     w.config(width=cols * (dim + 12), height=rows * (dim + 12))
     for s in range(env.n_states):
         r, c = env.state2coord[s]

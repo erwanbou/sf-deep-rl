@@ -5,6 +5,7 @@ import gridrender as gui
 from tkinter import Tk
 import tkinter.font as tkfont
 
+
 MDP = namedtuple('MDP', 'S,A,P,R,gamma,d0')
 
 
@@ -33,8 +34,14 @@ class GridWorld:
         # compute the actions available in each state
         self.compute_available_actions()
         self.gamma = gamma
-        self.proba_succ = 0.9
+        self.proba_succ = 1.
         self.render = render
+
+    def activate_render(self):
+        self.render = True
+
+    def deactivate_render(self):
+        self.render = False
 
     def reset(self):
         """
@@ -89,7 +96,7 @@ class GridWorld:
         return next_state, reward, absorb
 
     def show(self, state, action, next_state, reward):
-        dim = 200
+        dim = 40
         rows, cols = len(self.grid) + 0.5, max(map(len, self.grid))
         if not hasattr(self, 'window'):
             root = Tk()
@@ -201,33 +208,17 @@ class GridWorld:
         self.state_actions = []
         for i in range(self.n_rows):
             for j in range(self.n_cols):
-                if isinstance(self.grid[i][j], numbers.Number):
-                    self.state_actions.append([0])
-                elif self.grid[i][j] != 'x':
-                    actions = [0, 1, 2, 3]
-                    if i == 0:
-                        actions.remove(3)
-                    if j == self.n_cols - 1:
-                        actions.remove(0)
-                    if i == self.n_rows - 1:
-                        actions.remove(1)
-                    if j == 0:
-                        actions.remove(2)
+                actions = [0, 1, 2, 3]
+                if i == 0:
+                    actions.remove(3)
+                if j == self.n_cols - 1:
+                    actions.remove(0)
+                if i == self.n_rows - 1:
+                    actions.remove(1)
+                if j == 0:
+                    actions.remove(2)
 
-                    for a in actions.copy():
-                        r, c = i, j
-                        if a == 0:
-                            c = min(self.n_cols - 1, c + 1)
-                        elif a == 1:
-                            r = min(self.n_rows - 1, r + 1)
-                        elif a == 2:
-                            c = max(0, c - 1)
-                        else:
-                            r = max(0, r - 1)
-                        if self.grid[r][c] == 'x':
-                            actions.remove(a)
-
-                    self.state_actions.append(actions)
+                self.state_actions.append(actions)
 
 
 
