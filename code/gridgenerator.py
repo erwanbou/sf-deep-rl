@@ -37,8 +37,13 @@ class GridGenerator:
 
         idx_v = np.random.randint(len(self.possible_puddle_location))
         pos_puddle_vertical = self.possible_puddle_location[idx_v]
-        w[4+idx_h] = 1
-        w[4+len(self.puddle_location[1])+idx_v] = 1
+        w[4+idx_h] = -1
+        w[4+len(self.possible_puddle_location)+idx_v] = -1
+        # print("pos_puddle_horizontal {}".format(pos_puddle_horizontal))
+        # print("pos_puddle_vertical {}".format(pos_puddle_vertical))
+
+        # print("w = {}".format(w))
+        # print("idx_h : {} et idx_v : {}".format(idx_h, idx_v))
 
         # pos_puddle_horizontal = [np.random.randint(len(self.puddle_location[0])), np.random.randint(len(self.puddle_location[1]))]
         # pos_puddle_vertical = [np.random.randint(len(self.puddle_location[0])), np.random.randint(len(self.puddle_location[1]))]
@@ -46,15 +51,15 @@ class GridGenerator:
         i_horz = pos_puddle_horizontal[0]
         j_horz = pos_puddle_horizontal[1]
         grid[i_horz][j_horz] = -1
-        grid[i_horz + 1][j_horz] = -1
-        grid[i_horz - 1][j_horz] = -1
+        grid[i_horz][j_horz+1] = -1
+        grid[i_horz][j_horz-1] = -1
 
 
         i_vert = pos_puddle_vertical[0]
         j_vert = pos_puddle_vertical[1]
         grid[i_vert][j_vert] = -1
-        grid[i_vert][j_vert+1] = -1
-        grid[i_vert][j_vert-1] = -1
+        grid[i_vert+1][j_vert] = -1
+        grid[i_vert-1][j_vert] = -1
 
 
 
