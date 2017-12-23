@@ -11,7 +11,7 @@ def draw_square_q(polygon, x, y, q, actions, dim=50):
     polygon.create_polygon([x, y, x + dim, y, x + dim, y + dim, x, y + dim], outline='black',
                            fill='white', width=2)
 
-    font = ('Helvetica', '10', 'bold')
+    font = ('Helvetica', '8', 'bold')
 
     for i, a in enumerate(actions):
         if a == 0:
@@ -36,7 +36,7 @@ def draw_square_policy(w, x, y, pol, actions, dim=50):
     w.create_polygon([x, y, x + dim, y, x + dim, y + dim, x, y + dim], outline='black',
                      fill='white', width=2)
 
-    font = ('Helvetica', '30', 'bold')
+    font = ('Helvetica', '10', 'bold')
     if (hasattr(pol, "size") and pol.size > 1) or isinstance(pol, list):
         d = pol
     else:

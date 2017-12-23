@@ -1,4 +1,5 @@
 import numpy as np
+import itertools
 from gridworld import *
 
 
@@ -18,7 +19,9 @@ class GridGenerator:
         self.size = size
         self.nb_puddle = nb_puddle
         self.puddle_location = puddle_location
-
+        # all possible location of the puddle
+        self.possible_puddle_location = list(itertools.product(puddle_location[0], puddle_location[1]))
+        self.grid=None
 
     def create_Grid(self):
 
@@ -27,13 +30,36 @@ class GridGenerator:
         dim = 4 + len(self.puddle_location[0]) * len(self.puddle_location[1]) * 2
         w = np.array([0]*dim)
 
-        pos_puddle1 = [np.random.randint(len(self.puddle_location[0])), np.random.randint(len(self.puddle_location[1]))]
-        pos_puddle2 = [np.random.randint(len(self.puddle_location[0])), np.random.randint(len(self.puddle_location[1]))]
-        grid[self.puddle_location[0][pos_puddle1[0]]][self.puddle_location[1][pos_puddle1[1]]] = -1
-        grid[self.puddle_location[0][pos_puddle2[0]]][self.puddle_location[1][pos_puddle2[1]]] = -1
+        idx_h = np.random.randint(len(self.possible_puddle_location))
+        pos_puddle_horizontal = self.possible_puddle_location[idx_h]
+        print(pos_puddle_horizontal)
+        print(self.puddle_location)
 
-        w[4 + len(self.puddle_location[0])*pos_puddle1[0] + pos_puddle1[1]] = -1
-        w[4 + len(self.puddle_location[0])*len(self.puddle_location[1]) + len(self.puddle_location[0])*pos_puddle2[0] + pos_puddle2[1]] = -1
+        idx_v = np.random.randint(len(self.possible_puddle_location))
+        pos_puddle_vertical = self.possible_puddle_location[idx_v]
+        w[4+idx_h] = 1
+        w[4+len(self.puddle_location[1])+idx_v] = 1
+
+        # pos_puddle_horizontal = [np.random.randint(len(self.puddle_location[0])), np.random.randint(len(self.puddle_location[1]))]
+        # pos_puddle_vertical = [np.random.randint(len(self.puddle_location[0])), np.random.randint(len(self.puddle_location[1]))]
+
+        i_horz = pos_puddle_horizontal[0]
+        j_horz = pos_puddle_horizontal[1]
+        grid[i_horz][j_horz] = -1
+        grid[i_horz + 1][j_horz] = -1
+        grid[i_horz - 1][j_horz] = -1
+
+
+        i_vert = pos_puddle_vertical[0]
+        j_vert = pos_puddle_vertical[1]
+        grid[i_vert][j_vert] = -1
+        grid[i_vert][j_vert+1] = -1
+        grid[i_vert][j_vert-1] = -1
+
+
+
+        # w[4 + len(self.puddle_location[0])*pos_puddle_horizontal[0] + pos_puddle_horizontal[1]] = -1
+        # w[4 + len(self.puddle_location[0])*len(self.puddle_location[1]) + len(self.puddle_location[0])*pos_puddle_vertical[0] + pos_puddle_vertical[1]] = -1
 
         goal = np.random.randint(4)
         w[goal] = 1
@@ -41,9 +67,12 @@ class GridGenerator:
         grid[goal[0]][goal[1]] = 1
         self.grid = grid
 
-
-
         return grid, w
+
+    def get_possible_puddle_location(self):
+        return self.possible_puddle_location
+
+    # def get_phi(self):
 
 
 
