@@ -9,9 +9,9 @@ from tqdm import tqdm
 from numpy import linalg as LA
 
 
-size = [8, 8]
+size = [15, 15]
 nb_puddle = 2
-puddle_location=[[3,5], [3,5]]
+puddle_location=[[3,5,7,9,11], [3,5,7,9,11]]
 
 grid_gen = GridGenerator(size=size, nb_puddle=nb_puddle, puddle_location=puddle_location)
 
@@ -19,7 +19,6 @@ grid_gen = GridGenerator(size=size, nb_puddle=nb_puddle, puddle_location=puddle_
 # it represent the possible reward in the setting
 # the first 4 element represent the reward in each corner of the grid
 grid2, w_true = grid_gen.create_Grid()
-
 env = GridWorld(gamma=0.95, grid=grid2, render=False)
 
 possible_puddle_location = grid_gen.get_possible_puddle_location()
@@ -27,14 +26,6 @@ sta_poss_puddle = []
 for a,b in possible_puddle_location:
     # print("(a,b) : ({}, {})".format(a, b))
     sta_poss_puddle.append(env.coord2state[a,b])
-
-n = size[0]
-pol = [1]*(n) + ([0]*(n-1) + [1])*(n-2) + [0]*(n-1) + [2]
-
-max_act = max(map(len, env.state_actions))
-#q_init = np.random.rand(env.n_states, max_act)
-#q_init = np.zeros((env.n_states, max_act))
-
 
 
 def init_phi(grid_gen, env):
@@ -84,9 +75,7 @@ def init_phi(grid_gen, env):
 
     return phi
 
-
-
-def q_learning(env, init_policy, epsilon, sta_poss_puddle, phi, N, Tmax = 50) :
+def psi_learning(env, epsilon, sta_poss_puddle, phi, N, Tmax = 50) :
     """
     Args:
             env (GridWorld): The grid where the algorithm will be applied
@@ -96,16 +85,21 @@ def q_learning(env, init_policy, epsilon, sta_poss_puddle, phi, N, Tmax = 50) :
             Tmax (int) : the limite of transitions (episodic)
 
     Returns:
-            q_final ([[float]]) : final Q value
-            policy ([int]) : optimal policy according to Q-learning
-            V ([[float]]): Values computed during the algorithm
+            psi ([[float]]) : final successor features
+            pol ([int]) : optimal policy according to the psi-learning
+            V ([[float]]) : Values computed during the algorithm
+            w_stock ([[float]]) : list successive value of w
     """
     gamma = env.gamma
     max_act = max(map(len, env.state_actions))
     sf_size = 4 + 2*len(sta_poss_puddle)
     psi = np.zeros((env.n_states, max_act, sf_size))
 
-    lrn_rate = 0.2
+    # initialize a policy
+    size = [env.n_rows, env.n_cols]
+    pol = [1]*(size[1]) + ([0]*(size[1]-1) + [1])*(size[0]-2) + [0]*(size[1]-1) + [2]
+
+    lrn_rate = 0.02
     t = 1
     alpha = []
     for i1,i2 in enumerate(env.state_actions) :
@@ -113,7 +107,7 @@ def q_learning(env, init_policy, epsilon, sta_poss_puddle, phi, N, Tmax = 50) :
         for j1, j2 in enumerate(i2):
             alpha[i1].append(0.5)
 
-    pol = init_policy
+    # pol = init_policy
 
     V = []
     w = np.zeros(len(phi[0][0]))
@@ -134,7 +128,7 @@ def q_learning(env, init_policy, epsilon, sta_poss_puddle, phi, N, Tmax = 50) :
 
             q_tmp = []
             prev_state = state
-            prev_action = action
+            # prev_action = action
             state, reward, absorbing = env.step(state, action)
 
             # Compute the next expected Q-values
@@ -151,25 +145,25 @@ def q_learning(env, init_policy, epsilon, sta_poss_puddle, phi, N, Tmax = 50) :
             pol[state] = env.state_actions[state][idx_env]
 
             # Update Psi, the successor feature
-            TD_phi = phi[state][pol[state]] + gamma*psi[state][pol[state]] - psi[prev_state][prev_action]
-            psi[prev_state][prev_action] = psi[prev_state][prev_action] + alpha[prev_state][idx_action] * TD_phi
+            TD_phi = phi[prev_state][action] + gamma*psi[state][pol[state]] - psi[prev_state][action]
+            psi[prev_state][action] = psi[prev_state][action] + alpha[prev_state][idx_action] * TD_phi
 
             # Update w by gradient descent
-            err = np.dot(phi[prev_state][prev_action], w) - reward
-            w = w - lrn_rate * phi[prev_state][prev_action] * err / np.log(n+2) # smoothing convergence?
+            err = np.dot(phi[prev_state][action], w) - reward
+            w = w - lrn_rate * phi[prev_state][action] * err / np.log(n+2) # smoothing convergence?
 
             # Update the value fonction
             v = []
             for i in np.arange(env.n_states):
                 idx = env.state_actions[i].index(pol[i])
-                v.append(np.dot(phi[i][pol[i]],w))
+                v.append(np.dot(psi[i][pol[i]],w))
             V.append(v)
 
             alpha[prev_state][idx_action] = 1./((1/alpha[prev_state][idx_action]) + 1.)
             t_lim += 1
 
         w_stock.append(w)
-    return phi, pol, V, w_stock
+    return psi, pol, V, w_stock
 
 
 phi = init_phi(grid_gen, env)
@@ -180,7 +174,7 @@ phi = init_phi(grid_gen, env)
 #             print("state : {}, action : {}, phi :".format(idx, j))
 #             print(phi_tmp)
 
-phi, policy, V, w_stock = q_learning(env, pol, 0.3, sta_poss_puddle, phi, 100000)
+psi, policy, V, w_stock = psi_learning(env, 0.3, sta_poss_puddle, phi, 1000)
 
 # # gui.render_policy(env, policy)
 
@@ -197,6 +191,14 @@ env.activate_render()
 state = 14
 
 state, reward, absorb = env.step(state, policy[state])
+
+q = []
+for i1,i2 in enumerate(env.state_actions) :
+    q.append([])
+    for j1, j2 in enumerate(i2):
+        q[i1].append(np.dot(psi[i1][j2], w_true))
+
+# gui.render_q(env, q)
 
 gui.render_policy(env, policy)
 
