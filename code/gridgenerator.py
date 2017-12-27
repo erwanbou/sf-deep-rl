@@ -33,8 +33,6 @@ class GridGenerator:
 
         idx_h = np.random.randint(len(self.possible_puddle_location))
         pos_puddle_horizontal = self.possible_puddle_location[idx_h]
-        print(pos_puddle_horizontal)
-        print(self.puddle_location)
 
         idx_v = np.random.randint(len(self.possible_puddle_location))
         pos_puddle_vertical = self.possible_puddle_location[idx_v]
@@ -114,7 +112,7 @@ class GridGenerator:
         self.phi = phi
         return phi
 
-    def psi_learning(self, env, psi, epsilon, N, Tmax = 50) :
+    def psi_learning(self, env, psi, epsilon, N, Tmax = 50, render=True) :
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
@@ -151,7 +149,11 @@ class GridGenerator:
         w = np.zeros(len(phi[0][0]))
         w_stock = []
 
-        for n in tqdm(range(N)):
+        if(render):
+            rang = tqdm(range(N), desc="Learning Psi")
+        else:
+            rang = range(N)
+        for n in rang:
             state = env.reset()
             t_lim = 0
             absorbing = False
@@ -190,7 +192,7 @@ class GridGenerator:
                 err = np.dot(phi[prev_state][action], w) - reward
                 w = w - lrn_rate * phi[prev_state][action] * err / np.log(n+2) # smoothing convergence?
 
-                # Update the value fonction
+                # Update the value fonction ??
                 v = []
                 for i in np.arange(env.n_states):
                     idx = env.state_actions[i].index(pol[i])

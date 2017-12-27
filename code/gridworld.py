@@ -221,6 +221,29 @@ class GridWorld:
                 self.state_actions.append(actions)
 
 
-
+    def evaluate_policy(self, policy, N, render=True, Tmax=50):
+        '''
+        Evaluate a policy by Monte Carlo Method. It sample N trajectories
+        with length less than Tmax and return the mean of the cumulative
+        rewards with a discount factor gamma
+        '''
+        gamma = self.gamma
+        Values = []
+        if(render):
+            rang = tqdm(range(N), desc="Value evaluation")
+        else:
+            rang = range(N)
+        for i in rang:
+            absorbing = False
+            t_lim = 0
+            state = self.reset()
+            s = 0
+            while(not absorbing and t_lim<Tmax):
+                state, reward, absorbing = self.step(state, policy[state])
+                s += gamma**t_lim * reward
+                t_lim += 1
+            Values.append(s)
+        Values = np.array(Values)
+        return np.mean(Values)
 
 
