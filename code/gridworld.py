@@ -31,7 +31,7 @@ class GridWorld:
                 else:
                     self.coord2state[i, j] = -1
 
-        # compute the actions available in each state
+        # Compute the actions available in each state
         self.compute_available_actions()
         self.gamma = gamma
         self.proba_succ = 1.

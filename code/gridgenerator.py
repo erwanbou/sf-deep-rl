@@ -7,9 +7,9 @@ from numpy import linalg as LA
 
 class GridGenerator:
 
-    def __init__(self, size=[7,7],
-        #puddle_location=[[3,5,7,9,11], [3,5,7,9,11]],
-        puddle_location=[[3,5], [3,5]],
+    def __init__(self, size=[15,15],
+        puddle_location=[[3,5,7,9,11], [3,5,7,9,11]],
+        # puddle_location=[[3,5], [3,5]],
         seed=None,
         gamma=0.95):
 
@@ -25,6 +25,10 @@ class GridGenerator:
         self.init_phi()
 
     def create_Grid(self):
+        '''
+        Generate a random grid according to the parameter puddle_location and
+        possible_puddle_location
+        '''
 
         grid = [['' for i in np.arange(self.size[0])] for i in np.arange(self.size[1])]
 
@@ -116,15 +120,15 @@ class GridGenerator:
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
-                init_policy (int): The initial policy
+                psi ([[floa]]): Successor feature
                 epsilon (int) : exploration rate, the probability to take a random path
                 N (int) : number of samples
                 Tmax (int) : the limite of transitions (episodic)
 
         Returns:
-                psi ([[float]]) : final successor features
+                psi ([[float]]) : updated successor features
                 pol ([int]) : optimal policy according to the psi-learning
-                V ([[float]]) : Values computed during the algorithm
+                V ([[float]]) : Values computed during the algorithm ??
                 w_stock ([[float]]) : list successive value of w
         """
         phi = self.phi
@@ -143,9 +147,8 @@ class GridGenerator:
             for j1, j2 in enumerate(i2):
                 alpha[i1].append(0.5)
 
-        # pol = init_policy
-
         V = []
+        # Null or random initialiation? EB
         w = np.zeros(len(phi[0][0]))
         w_stock = []
 
@@ -168,7 +171,6 @@ class GridGenerator:
 
                 q_tmp = []
                 prev_state = state
-                # prev_action = action
                 state, reward, absorbing = env.step(state, action)
 
                 # Compute the next expected Q-values
@@ -176,8 +178,7 @@ class GridGenerator:
                     q_tmp.append(np.dot(psi[state][new_action], w))
 
                 q_tmp = np.array(q_tmp)
-                # Select the best action for the next step
-                # idx_env = np.argmax(q_tmp)
+                # Select the best action (random among the maximum) for the next step
                 idx_env = np.random.choice(np.flatnonzero(q_tmp == q_tmp.max()))
                 best_q = q_tmp[idx_env]
 
@@ -191,6 +192,8 @@ class GridGenerator:
                 # Update w by gradient descent
                 err = np.dot(phi[prev_state][action], w) - reward
                 w = w - lrn_rate * phi[prev_state][action] * err / np.log(n+2) # smoothing convergence?
+                # the term np.log(n+2) allow to smooth the gradient descent. The smoothing
+                # with O(1/n) is a bit too rude, where with a log-smoothing, the convergence is better. EB
 
                 # Update the value fonction ??
                 v = []
