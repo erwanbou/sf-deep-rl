@@ -14,9 +14,12 @@ gamma = 0.95
 size = [15, 15]
 puddle_location=[[3,5,7,9,11], [3,5,7,9,11]]
 N_round = 10 # nb rounds
-N_psi_learning = 1000 # nb rounds in Psi Learning in the same environment
-N_policy_evaluation = 50 # nb rounds in policy evaluation (accuracy)
+N_psi_learning = 5000 # nb rounds in Psi Learning in the same environment
+# N_policy_evaluation = 50 # nb rounds in policy evaluation (accuracy)
 epsilon = 0.15 # exploration/exploitation for psi-learning
+
+# Choose Seed to get different values
+seeds = [394840, 28732, 29873, 8173]
 
 # The generator of random grid
 grid_gen = GridGenerator(size=size, puddle_location=puddle_location)
@@ -32,12 +35,13 @@ rewards_q = [0]
 
 for i in tqdm(range(N_round)):
     # set seed
-    seed = 2 * i + 10009283
+    seed = seeds[0] * i + seeds[1]
     # Create a new grid
     np.random.seed(seed)
     env1, w_true = grid_gen.create_Grid()
     # Learn Psi
-    psi, policy, reward, w_stock = grid_gen.psi_learning(env1, psi, epsilon, N_psi_learning, render=True)
+    psi, policy, reward, w_stock = grid_gen.psi_learning(env1,
+        psi, epsilon, N_psi_learning, render=True, a_seed = seeds[2], b_seed=seeds[3])
     rewards_psi += reward
 
     np.random.seed(seed)
@@ -45,7 +49,8 @@ for i in tqdm(range(N_round)):
     # env.window = window
     # Learn Q
     env1.exchange_window(env2)
-    q, pol, reward = grid_gen.q_learning(env2, epsilon, N_psi_learning, render=True)
+    q, pol, reward = grid_gen.q_learning(env2,
+        epsilon, N_psi_learning, render=True, a_seed = seeds[2], b_seed=seeds[3])
     rewards_q += reward
     # evaluate the policy according to Psi
     # policy_evaluation.append(env.evaluate_policy(policy, N_policy_evaluation, render=True))
