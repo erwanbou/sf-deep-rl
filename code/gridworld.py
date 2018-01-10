@@ -4,9 +4,27 @@ import numbers
 import gridrender as gui
 from tkinter import Tk
 import tkinter.font as tkfont
+from tqdm import tqdm
+
 
 
 MDP = namedtuple('MDP', 'S,A,P,R,gamma,d0')
+
+class Policy:
+    def __init__(self, env):
+        self.size = [env.n_rows, env.n_cols]
+        self.actions = []
+        for i in range(env.n_states):
+            self.actions.append(np.random.choice(env.state_actions[i]))
+
+    def get_action(self, state):
+        return self.actions[state]
+
+    def update_action(self, state, action):
+        self.actions[state] = action
+
+
+
 
 
 class GridWorld:
@@ -34,7 +52,7 @@ class GridWorld:
         # Compute the actions available in each state
         self.compute_available_actions()
         self.gamma = gamma
-        self.proba_succ = 1.
+        self.proba_succ = 0.9
         self.render = render
 
     def activate_render(self):
@@ -86,6 +104,10 @@ class GridWorld:
             if isinstance(self.grid[r][c], numbers.Number):
                 reward = self.grid[r][c]
                 absorb = True
+                # if(reward == -1):
+                #     absorb = False
+                # else:
+                #     absorb = True
             else:
                 reward = 0.
                 absorb = False
@@ -229,20 +251,25 @@ class GridWorld:
         '''
         gamma = self.gamma
         Values = []
+        N_state = self.n_states
         if(render):
-            rang = tqdm(range(N), desc="Value evaluation")
+            rang = tqdm(range(N_state), desc="Value evaluation")
         else:
-            rang = range(N)
+            rang = range(N_state)
         for i in rang:
-            absorbing = False
-            t_lim = 0
-            state = self.reset()
-            s = 0
-            while(not absorbing and t_lim<Tmax):
-                state, reward, absorbing = self.step(state, policy[state])
-                s += gamma**t_lim * reward
-                t_lim += 1
-            Values.append(s)
+            value_by_state = []
+            for j in range(N):
+                absorbing = False
+                t_lim = 0
+                state = i
+                s = 0
+                while(not absorbing and t_lim<Tmax):
+                    state, reward, absorbing = self.step(state, policy[state])
+                    s += gamma**t_lim * reward
+                    t_lim += 1
+                value_by_state.append(s)
+            value_by_state = np.array(value_by_state)
+            Values.append(np.mean(value_by_state))
         Values = np.array(Values)
         return np.mean(Values)
 

@@ -116,7 +116,7 @@ class GridGenerator:
         self.phi = phi
         return phi
 
-    def psi_learning(self, env, psi, epsilon, N, Tmax = 50, render=True) :
+    def psi_learning(self, env, psi, epsilon, N, lrn_rate = 0.02, Tmax = 50, render=True) :
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
@@ -127,7 +127,7 @@ class GridGenerator:
 
         Returns:
                 psi ([[float]]) : updated successor features
-                pol ([int]) : optimal policy according to the psi-learning
+                pol (Policy object) : optimal policy according to the psi-learning
                 V ([[float]]) : Values computed during the algorithm ??
                 w_stock ([[float]]) : list successive value of w
         """
@@ -137,9 +137,8 @@ class GridGenerator:
 
         # initialize a policy
         size = self.size
-        pol = [1]*(size[1]) + ([0]*(size[1]-1) + [1])*(size[0]-2) + [0]*(size[1]-1) + [2]
-
-        lrn_rate = 0.02
+        # pol = [1]*(size[1]) + ([0]*(size[1]-1) + [1])*(size[0]-2) + [0]*(size[1]-1) + [2]
+        pol = Policy(env)
         t = 1
         alpha = []
         for i1,i2 in enumerate(env.state_actions) :
@@ -147,10 +146,10 @@ class GridGenerator:
             for j1, j2 in enumerate(i2):
                 alpha[i1].append(0.5)
 
-        V = []
         # Null or random initialiation? EB
         w = np.zeros(len(phi[0][0]))
         w_stock = []
+        rewards = []
 
         if(render):
             rang = tqdm(range(N), desc="Learning Psi")
@@ -160,11 +159,13 @@ class GridGenerator:
             state = env.reset()
             t_lim = 0
             absorbing = False
+            # if(n == N-20):
+            #     env.activate_render()
             while(not absorbing and t_lim < Tmax):
 
                 greedy = np.random.rand(1) > epsilon
 
-                action = pol[state] if greedy else np.random.choice(env.state_actions[state])
+                action = pol.get_action(state) if greedy else np.random.choice(env.state_actions[state])
 
                 # To update alpha
                 idx_action = env.state_actions[state].index(action)
@@ -183,10 +184,10 @@ class GridGenerator:
                 best_q = q_tmp[idx_env]
 
                 # Update the policy
-                pol[state] = env.state_actions[state][idx_env]
+                pol.update_action(state, env.state_actions[state][idx_env])
 
                 # Update Psi, the successor feature
-                TD_phi = phi[prev_state][action] + gamma*psi[state][pol[state]] - psi[prev_state][action]
+                TD_phi = phi[prev_state][action] + gamma*psi[state][pol.get_action(state)] - psi[prev_state][action]
                 psi[prev_state][action] = psi[prev_state][action] + alpha[prev_state][idx_action] * TD_phi
 
                 # Update w by gradient descent
@@ -196,16 +197,83 @@ class GridGenerator:
                 # with O(1/n) is a bit too rude, where with a log-smoothing, the convergence is better. EB
 
                 # Update the value fonction ??
-                v = []
-                for i in np.arange(env.n_states):
-                    idx = env.state_actions[i].index(pol[i])
-                    v.append(np.dot(psi[i][pol[i]],w))
-                V.append(v)
+                # v = []
+                # for i in np.arange(env.n_states):
+                #     idx = env.state_actions[i].index(pol[i])
+                #     v.append(np.dot(psi[i][pol[i]],w))
+                # V.append(v)
 
                 alpha[prev_state][idx_action] = 1./((1/alpha[prev_state][idx_action]) + 1.)
                 t_lim += 1
-
+            rewards.append(reward * gamma**(t_lim-1))
             w_stock.append(w)
-        return psi, pol, V, w_stock
+        return psi, pol, rewards, w_stock
 
 
+    def q_learning(self, env, epsilon, N, Tmax = 50, render=False) :
+        """
+        Args:
+                env (GridWorld): The grid where the algorithm will be applied
+                init_policy (int): The initial policy
+                epsilon (int) : exploration rate, the probability to take a random path
+                N (int) : number of samples
+                Tmax (int) : the limite of transitions (episodic)
+
+        Returns:
+                q_final ([[float]]) : final Q value
+                policy ([int]) : optimal policy according to Q-learning
+                V ([[float]]): Values computed during the algorithm
+        """
+        gamma = env.gamma
+
+        alpha = []
+        for i1,i2 in enumerate(env.state_actions) :
+            alpha.append([])
+            for j1, j2 in enumerate(i2):
+                alpha[i1].append(0.5)
+        pol = Policy(env)
+        q = np.zeros((env.n_states, 4))
+        V = []
+        rewards=[]
+        if(render):
+            rang = tqdm(range(N), desc="Learning Psi")
+        else:
+            rang = range(N)
+        for n in rang:
+            state = env.reset()
+            t_lim = 0
+            absorbing = False
+            while(not absorbing and t_lim < Tmax):
+
+                greedy = np.random.rand(1) > epsilon
+                action = pol.get_action(state) if greedy else np.random.choice(env.state_actions[state])
+                idx_action = env.state_actions[state].index(action)
+
+                q_tmp = []
+                prev_state = state
+                state, reward, absorbing = env.step(state, action)
+
+                for idx, new_action in enumerate(env.state_actions[state]):
+                    q_tmp.append(q[state][new_action])
+
+                idx_best = np.argmax(q_tmp)
+                pol.update_action(state, env.state_actions[state][idx_best])
+                best_q = np.max(np.array(q_tmp))
+
+                TD = reward + gamma*best_q - q[prev_state][idx_action]
+
+                # Update Q, the Q-function
+                q[prev_state][idx_action] = q[prev_state][idx_action] + alpha[prev_state][idx_action] * TD
+
+                # Update the vaue fonction
+                # v = []
+                # for i in np.arange(env.n_states):
+                #     idx = env.state_actions[i].index(pol[i])
+                #     v.append(q[i][idx])
+                # V.append(v)
+
+                alpha[prev_state][idx_action] = 1/((1/alpha[prev_state][idx_action]) + 1)
+                t_lim += 1
+            rewards.append(reward * gamma**(t_lim-1))
+
+        return q, pol, rewards
