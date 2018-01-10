@@ -116,7 +116,7 @@ class GridGenerator:
         self.phi = phi
         return phi
 
-    def psi_learning(self, env, psi, epsilon, N, lrn_rate = 0.02, Tmax = 50, render=True) :
+    def psi_learning(self, env, psi, epsilon, N, lrn_rate = 0.02, Tmax = 50, render=True, view_end = True) :
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
@@ -133,8 +133,6 @@ class GridGenerator:
         """
         phi = self.phi
         gamma = env.gamma
-
-
         # initialize a policy
         size = self.size
         # pol = [1]*(size[1]) + ([0]*(size[1]-1) + [1])*(size[0]-2) + [0]*(size[1]-1) + [2]
@@ -159,8 +157,10 @@ class GridGenerator:
             state = env.reset()
             t_lim = 0
             absorbing = False
-            # if(n == N-20):
-            #     env.activate_render()
+            # show the last episodes of a round
+            if view_end == True:
+                if(n == N-20):
+                     env.activate_render(color = 'blue')
             while(not absorbing and t_lim < Tmax):
 
                 greedy = np.random.rand(1) > epsilon
@@ -207,10 +207,12 @@ class GridGenerator:
                 t_lim += 1
             rewards.append(reward * gamma**(t_lim-1))
             w_stock.append(w)
+        if view_end == True:
+            env.deactivate_render()
         return psi, pol, rewards, w_stock
 
 
-    def q_learning(self, env, epsilon, N, Tmax = 50, render=False) :
+    def q_learning(self, env, epsilon, N, Tmax = 50, render=False, view_end = True) :
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
@@ -242,6 +244,10 @@ class GridGenerator:
         for n in rang:
             state = env.reset()
             t_lim = 0
+            # show the last episodes of a round
+            if view_end == True:
+                if(n == N-20):
+                     env.activate_render(color = 'red')
             absorbing = False
             while(not absorbing and t_lim < Tmax):
 
@@ -275,5 +281,6 @@ class GridGenerator:
                 alpha[prev_state][idx_action] = 1/((1/alpha[prev_state][idx_action]) + 1)
                 t_lim += 1
             rewards.append(reward * gamma**(t_lim-1))
-
+        if view_end == True:
+            env.deactivate_render()
         return q, pol, rewards

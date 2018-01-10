@@ -35,7 +35,6 @@ for i in tqdm(range(N_round)):
     seed = 2 * i + 10009283
     # Create a new grid
     env, w_true = grid_gen.create_Grid()
-    # env.activate_render()
     np.random.seed(seed)
     # Learn Psi
     psi, policy, reward, w_stock = grid_gen.psi_learning(env, psi, epsilon, N_psi_learning, render=True)
@@ -48,9 +47,9 @@ for i in tqdm(range(N_round)):
     # evaluate the policy according to Psi
     # policy_evaluation.append(env.evaluate_policy(policy, N_policy_evaluation, render=True))
 
-# Show the last environment
-# env.activate_render()
-# render_policy(env, policy)
+## Show the last environment
+#env.activate_render()
+#render_policy(env, policy)
 # state =14
 # env.step(state, policy[state])
 # render_policy(env, policy)

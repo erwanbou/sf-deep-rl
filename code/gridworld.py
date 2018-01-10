@@ -28,7 +28,7 @@ class Policy:
 
 
 class GridWorld:
-    def __init__(self, gamma=0.95, grid=None, render=False):
+    def __init__(self, gamma=0.95, grid=None, render=False, color = 'red'):
         self.grid = grid
 
         self.action_names = np.array(['right', 'down', 'left', 'up'])
@@ -54,9 +54,11 @@ class GridWorld:
         self.gamma = gamma
         self.proba_succ = 0.9
         self.render = render
+        self.color = color
 
-    def activate_render(self):
+    def activate_render(self, color = 'red'):
         self.render = True
+        self.color = color
 
     def deactivate_render(self):
         self.render = False
@@ -113,11 +115,11 @@ class GridWorld:
                 absorb = False
 
         if self.render:
-            self.show(state, action, next_state, reward)
+            self.show(state, action, next_state, reward, color = self.color)
 
         return next_state, reward, absorb
 
-    def show(self, state, action, next_state, reward):
+    def show(self, state, action, next_state, reward, color = 'red'):
         dim = 40
         rows, cols = len(self.grid) + 0.5, max(map(len, self.grid))
         if not hasattr(self, 'window'):
@@ -157,7 +159,7 @@ class GridWorld:
 
         # self.line1 = self.window.create_arc(x0, y0, x1, y1, dash=(3,5))
         # self.oval1 = self.window.create_oval(x0 - dim / 20., y0 - dim / 20., x0 + dim / 20., y0 + dim / 20., dash=(3,5))
-        self.oval2 = self.window.create_oval(x1 - dim / 5., y1 - dim / 5., x1 + dim / 5., y1 + dim / 5., fill='red')
+        self.oval2 = self.window.create_oval(x1 - dim / 5., y1 - dim / 5., x1 + dim / 5., y1 + dim / 5., fill=color)
         self.text1 = self.window.create_text(dim, (rows - 0.25) * (dim + 12), font=my_font,
                                              text="r= {:.1f}".format(reward), anchor='center')
         self.text2 = self.window.create_text(2 * dim, (rows - 0.25) * (dim + 12), font=my_font,
