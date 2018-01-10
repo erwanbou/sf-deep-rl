@@ -34,15 +34,18 @@ for i in tqdm(range(N_round)):
     # set seed
     seed = 2 * i + 10009283
     # Create a new grid
-    env, w_true = grid_gen.create_Grid()
     np.random.seed(seed)
+    env1, w_true = grid_gen.create_Grid()
     # Learn Psi
-    psi, policy, reward, w_stock = grid_gen.psi_learning(env, psi, epsilon, N_psi_learning, render=True)
+    psi, policy, reward, w_stock = grid_gen.psi_learning(env1, psi, epsilon, N_psi_learning, render=True)
     rewards_psi += reward
 
     np.random.seed(seed)
+    env2, w_true = grid_gen.create_Grid()
+    # env.window = window
     # Learn Q
-    q, pol, reward = grid_gen.q_learning(env, epsilon, N_psi_learning, render=True)
+    env1.exchange_window(env2)
+    q, pol, reward = grid_gen.q_learning(env2, epsilon, N_psi_learning, render=True)
     rewards_q += reward
     # evaluate the policy according to Psi
     # policy_evaluation.append(env.evaluate_policy(policy, N_policy_evaluation, render=True))

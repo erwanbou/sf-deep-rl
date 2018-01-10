@@ -63,6 +63,10 @@ class GridWorld:
     def deactivate_render(self):
         self.render = False
 
+    def exchange_window(self, env2):
+        if hasattr(self, 'window'):
+            env2.window = self.window
+
     def reset(self):
         """
         Returns:
@@ -166,6 +170,7 @@ class GridWorld:
                                              text="action: {}".format(self.action_names[action]), anchor='center')
         self.window.update()
 
+
     def matrix_representation(self):
         """
         Returns:
@@ -266,7 +271,7 @@ class GridWorld:
                 state = i
                 s = 0
                 while(not absorbing and t_lim<Tmax):
-                    state, reward, absorbing = self.step(state, policy[state])
+                    state, reward, absorbing, window = self.step(state, policy[state])
                     s += gamma**t_lim * reward
                     t_lim += 1
                 value_by_state.append(s)

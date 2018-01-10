@@ -116,7 +116,7 @@ class GridGenerator:
         self.phi = phi
         return phi
 
-    def psi_learning(self, env, psi, epsilon, N, lrn_rate = 0.02, Tmax = 50, render=True, view_end = True) :
+    def psi_learning(self, env, psi, epsilon, N, lrn_rate = 0.02, Tmax = 50, render=True, view_end = True, a_seed =10, b_seed=302):
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
@@ -150,16 +150,17 @@ class GridGenerator:
         rewards = []
 
         if(render):
-            rang = tqdm(range(N), desc="Learning Psi")
+            rang = tqdm(range(N), desc="Psi-learning")
         else:
             rang = range(N)
         for n in rang:
+            np.random.seed(a_seed * n + b_seed)
             state = env.reset()
             t_lim = 0
             absorbing = False
             # show the last episodes of a round
             if view_end == True:
-                if(n == N-20):
+                if(n == N-1):
                      env.activate_render(color = 'blue')
             while(not absorbing and t_lim < Tmax):
 
@@ -212,7 +213,7 @@ class GridGenerator:
         return psi, pol, rewards, w_stock
 
 
-    def q_learning(self, env, epsilon, N, Tmax = 50, render=False, view_end = True) :
+    def q_learning(self, env, epsilon, N, Tmax = 50, render=False, view_end = True, a_seed =10, b_seed=302) :
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
@@ -238,15 +239,16 @@ class GridGenerator:
         V = []
         rewards=[]
         if(render):
-            rang = tqdm(range(N), desc="Learning Psi")
+            rang = tqdm(range(N), desc="Q-learning")
         else:
             rang = range(N)
         for n in rang:
+            np.random.seed(a_seed * n + b_seed)
             state = env.reset()
             t_lim = 0
             # show the last episodes of a round
             if view_end == True:
-                if(n == N-20):
+                if(n == N-1):
                      env.activate_render(color = 'red')
             absorbing = False
             while(not absorbing and t_lim < Tmax):
