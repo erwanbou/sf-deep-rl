@@ -52,7 +52,6 @@ for i in tqdm(range(N_round)):
     q, pol, reward = grid_gen.q_learning(env2,
         epsilon, N_psi_learning, render=True, a_seed = seeds[2], b_seed=seeds[3])
     rewards_q += reward
-    env2.quit()
     env1.quit()
     # evaluate the policy according to Psi
     # policy_evaluation.append(env.evaluate_policy(policy, N_policy_evaluation, render=True))
