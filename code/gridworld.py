@@ -67,6 +67,12 @@ class GridWorld:
         if hasattr(self, 'window'):
             env2.window = self.window
 
+    def quit(self):
+        if hasattr(self, 'root'):
+            self.root.destroy()
+
+
+
     def reset(self):
         """
         Returns:
@@ -127,8 +133,8 @@ class GridWorld:
         dim = 40
         rows, cols = len(self.grid) + 0.5, max(map(len, self.grid))
         if not hasattr(self, 'window'):
-            root = Tk()
-            self.window = gui.GUI(root)
+            self.root = Tk()
+            self.window = gui.GUI(self.root)
 
             self.window.config(width=cols * (dim + 12), height=rows * (dim + 12))
             my_font = tkfont.Font(family="Arial", size=32, weight="bold")

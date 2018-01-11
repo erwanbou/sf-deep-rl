@@ -14,7 +14,7 @@ gamma = 0.95
 size = [15, 15]
 puddle_location=[[3,5,7,9,11], [3,5,7,9,11]]
 N_round = 10 # nb rounds
-N_psi_learning = 5000 # nb rounds in Psi Learning in the same environment
+N_psi_learning = 2000 # nb rounds in Psi Learning in the same environment
 # N_policy_evaluation = 50 # nb rounds in policy evaluation (accuracy)
 epsilon = 0.15 # exploration/exploitation for psi-learning
 
@@ -52,6 +52,8 @@ for i in tqdm(range(N_round)):
     q, pol, reward = grid_gen.q_learning(env2,
         epsilon, N_psi_learning, render=True, a_seed = seeds[2], b_seed=seeds[3])
     rewards_q += reward
+    env2.quit()
+    env1.quit()
     # evaluate the policy according to Psi
     # policy_evaluation.append(env.evaluate_policy(policy, N_policy_evaluation, render=True))
 
