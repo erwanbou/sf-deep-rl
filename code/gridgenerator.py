@@ -116,7 +116,7 @@ class GridGenerator:
         self.phi = phi
         return phi
 
-    def psi_learning(self, env, psi, epsilon, N, lrn_rate = 0.02, Tmax = 50, render=True, view_end = True, a_seed =10, b_seed=302):
+    def psi_learning(self, env, psi, epsilon, N, lrn_rate = 0.02, Tmax = 50, render=True, view_end=True, a_seed =10, b_seed=302):
         """
         Args:
                 env (GridWorld): The grid where the algorithm will be applied
