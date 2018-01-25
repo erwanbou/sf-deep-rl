@@ -160,7 +160,7 @@ class GridGenerator:
             absorbing = False
             # show the last episodes of a round
             if view_end == True:
-                if(n == N-1):
+                if(n == N-10):
                      env.activate_render(color = 'blue')
             while(not absorbing and t_lim < Tmax):
 
@@ -248,7 +248,7 @@ class GridGenerator:
             t_lim = 0
             # show the last episodes of a round
             if view_end == True:
-                if(n == N-1):
+                if(n == N-10):
                      env.activate_render(color = 'red')
             absorbing = False
             while(not absorbing and t_lim < Tmax):
