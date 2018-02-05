@@ -3,6 +3,7 @@ import itertools
 from gridworld import *
 from tqdm import tqdm
 from numpy import linalg as LA
+from gridrender import *
 
 
 class GridGenerator:
@@ -19,6 +20,7 @@ class GridGenerator:
         self.seed = seed
         self.size = size
         self.puddle_location = puddle_location
+
         # all possible location of the puddle
         self.possible_puddle_location = list(itertools.product(puddle_location[0], puddle_location[1]))
         self.gamma = gamma
@@ -48,7 +50,6 @@ class GridGenerator:
         grid[i_horz][j_horz] = -1
         grid[i_horz][j_horz+1] = -1
         grid[i_horz][j_horz-1] = -1
-
 
         i_vert = pos_puddle_vertical[0]
         j_vert = pos_puddle_vertical[1]
@@ -158,9 +159,9 @@ class GridGenerator:
             state = env.reset()
             t_lim = 0
             absorbing = False
-            # show the last episodes of a round
+            # show the last episode of a round
             if view_end == True:
-                if(n == N-10):
+                if(n == N-1):
                      env.activate_render(color = 'blue')
             while(not absorbing and t_lim < Tmax):
 
@@ -195,14 +196,7 @@ class GridGenerator:
                 err = np.dot(phi[prev_state][action], w) - reward
                 w = w - lrn_rate * phi[prev_state][action] * err / np.log(n+2) # smoothing convergence?
                 # the term np.log(n+2) allow to smooth the gradient descent. The smoothing
-                # with O(1/n) is a bit too rude, where with a log-smoothing, the convergence is better. EB
-
-                # Update the value fonction ??
-                # v = []
-                # for i in np.arange(env.n_states):
-                #     idx = env.state_actions[i].index(pol[i])
-                #     v.append(np.dot(psi[i][pol[i]],w))
-                # V.append(v)
+                # with O(1/n) is a bit too rude, where with a log-smoothing, the convergence is better.
 
                 alpha[prev_state][idx_action] = 1./((1/alpha[prev_state][idx_action]) + 1.)
                 t_lim += 1
@@ -235,6 +229,9 @@ class GridGenerator:
             for j1, j2 in enumerate(i2):
                 alpha[i1].append(0.5)
         pol = Policy(env)
+
+        # print(pol.actions)
+
         q = np.zeros((env.n_states, 4))
         V = []
         rewards=[]
@@ -246,13 +243,17 @@ class GridGenerator:
             np.random.seed(a_seed * n + b_seed)
             state = env.reset()
             t_lim = 0
-            # show the last episodes of a round
-            if view_end == True:
-                if(n == N-10):
-                     env.activate_render(color = 'red')
-            absorbing = False
-            while(not absorbing and t_lim < Tmax):
 
+
+            # Show the last episodes of a round
+            if view_end == True:
+                if(n == N-1):
+                    # render_policy(env, pol.actions)
+                    env.activate_render(color = 'red')
+            absorbing = False
+            # if(n%10 == 0):
+            #     render_policy(env, pol.actions)
+            while(not absorbing and t_lim < Tmax):
                 greedy = np.random.rand(1) > epsilon
                 action = pol.get_action(state) if greedy else np.random.choice(env.state_actions[state])
                 idx_action = env.state_actions[state].index(action)
@@ -264,7 +265,10 @@ class GridGenerator:
                 for idx, new_action in enumerate(env.state_actions[state]):
                     q_tmp.append(q[state][new_action])
 
-                idx_best = np.argmax(q_tmp)
+                q_tmp = np.array(q_tmp)
+
+                # idx_best = np.argmax(q_tmp)
+                idx_best = np.random.choice(np.flatnonzero(q_tmp == q_tmp.max()))
                 pol.update_action(state, env.state_actions[state][idx_best])
                 best_q = np.max(np.array(q_tmp))
 
@@ -272,13 +276,6 @@ class GridGenerator:
 
                 # Update Q, the Q-function
                 q[prev_state][idx_action] = q[prev_state][idx_action] + alpha[prev_state][idx_action] * TD
-
-                # Update the vaue fonction
-                # v = []
-                # for i in np.arange(env.n_states):
-                #     idx = env.state_actions[i].index(pol[i])
-                #     v.append(q[i][idx])
-                # V.append(v)
 
                 alpha[prev_state][idx_action] = 1/((1/alpha[prev_state][idx_action]) + 1)
                 t_lim += 1

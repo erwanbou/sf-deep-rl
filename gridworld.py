@@ -24,9 +24,6 @@ class Policy:
         self.actions[state] = action
 
 
-
-
-
 class GridWorld:
     def __init__(self, gamma=0.95, grid=None, render=False, color = 'red'):
         self.grid = grid

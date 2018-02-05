@@ -13,11 +13,10 @@ from numpy import linalg as LA
 gamma = 0.95
 size = [15, 15]
 puddle_location=[[3,5,7,9,11], [3,5,7,9,11]]
-N_round = 20 # nb rounds
-N_learning = 1000 # nb rounds in Psi Learning in the same environment
-# N_policy_evaluation = 50 # nb rounds in policy evaluation (accuracy)
-epsilon = 0.3 # exploration/exploitation for psi-learning
-N_MC = 20
+N_round = 50           # nb rounds
+N_learning = 200       # nb rounds in Psi and Q Learning in the same environment
+epsilon = 0.3          # exploration/exploitation for learning
+N_MC = 1
 # Choose Seed to get different values
 
 total_rewards_psi = np.zeros(N_round*N_learning + 1)
@@ -38,35 +37,32 @@ for j in tqdm(range(N_MC)):
     rewards_psi = [0]
     rewards_q = [0]
 
-
     for i in tqdm(range(N_round)):
-        # set seed
+        # Set seed
         seed = seeds[0] * i + seeds[1]
         # Create a new grid
         np.random.seed(seed)
         env1, w_true = grid_gen.create_Grid()
         # Learn Psi
         psi, policy, reward, w_stock = grid_gen.psi_learning(env1,
-            psi, epsilon, N_learning, view_end = False, render=True, a_seed = i * seeds[2]+2, b_seed= i * seeds[3])
+            psi, epsilon, N_learning,
+            view_end = False, render=True,
+            a_seed = i * seeds[2]+2,
+            b_seed= i * seeds[3])
         rewards_psi += reward
 
         np.random.seed(seed)
         env2, w_true = grid_gen.create_Grid()
-        # env.window = window
-        # Learn Q
         env1.exchange_window(env2)
+        # Learn Q
         q, pol, reward = grid_gen.q_learning(env2,
-            epsilon, N_learning, view_end = False, render=True, a_seed = i * seeds[2]+2, b_seed= i * seeds[3])
+            epsilon, N_learning,
+            view_end = False,
+            render=True,
+            a_seed = i * seeds[2]+2,
+            b_seed= i * seeds[3])
         rewards_q += reward
-        # evaluate the policy according to Psi
-        # policy_evaluation.append(env.evaluate_policy(policy, N_policy_evaluation, render=True))
 
-    ## Show the last environment
-    #env.activate_render()
-    #render_policy(env, policy)
-    # state =14
-    # env.step(state, policy[state])
-    # render_policy(env, policy)
 
     # policy_evaluation = np.array(policy_evaluation)
     rewards_psi = np.array(rewards_psi)
