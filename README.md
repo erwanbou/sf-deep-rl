@@ -10,7 +10,7 @@ This project takes part into the master 'MVA'. It is based on the following pape
 
 ## Instructions
 
-* deadline : unknown for now (around 17/01/2018)
-* final report will have 5-10 pages
-* formatting of submission:  NIPS forma
-* time your presentation for 15 minutes  (strict!)
+Implementation of the Puddle World described in \textit{Barreto et al. (2017)} and comparing classical reinforcement learning algorithm to transfer learning with successor feature algorithm. See the pdf for more description.
+
+Reviewing papers using similar algorithms in deep reinforcement learning.
+
